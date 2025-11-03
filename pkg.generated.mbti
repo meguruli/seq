@@ -1,0 +1,111 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "meguruli/seq"
+
+import(
+  "moonbitlang/core/list"
+)
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct LSeq[A] {
+  // private fields
+}
+fn[A] LSeq::adjust(Self[A], Int, (A) -> A) -> Self[A]
+fn[A] LSeq::append(Self[A], Self[A]) -> Self[A]
+fn[A] LSeq::break_seq(Self[A], (A) -> Bool) -> (Self[A], Self[A])
+fn[A] LSeq::concat(@list.List[Self[A]]) -> Self[A]
+fn[A, B] LSeq::concat_map(Self[A], (A) -> Self[B]) -> Self[B]
+fn[A] LSeq::cons(A, Self[A]) -> Self[A]
+fn[A] LSeq::delete_at(Self[A], Int) -> Self[A]
+fn[A] LSeq::drop(Self[A], Int) -> Self[A]
+fn[A] LSeq::drop_right(Self[A], Int) -> Self[A]
+fn[A] LSeq::drop_while(Self[A], (A) -> Bool) -> Self[A]
+fn[A] LSeq::drop_while_right(Self[A], (A) -> Bool) -> Self[A]
+fn[A] LSeq::empty() -> Self[A]
+fn[A] LSeq::filter(Self[A], (A) -> Bool) -> Self[A]
+fn[A] LSeq::from_list(@list.List[A]) -> Self[A]
+fn[A] LSeq::index(Self[A], Int) -> A
+fn[A] LSeq::insert_at(Self[A], Int, A) -> Self[A]
+fn[A] LSeq::length(Self[A]) -> Int
+fn[A] LSeq::lookup(Self[A], Int) -> A?
+fn[A, B] LSeq::map(Self[A], (A) -> B) -> Self[B]
+fn[A, B] LSeq::map_with_index(Self[A], (Int, A) -> B) -> Self[B]
+fn[A] LSeq::null(Self[A]) -> Bool
+fn[A] LSeq::partition(Self[A], (A) -> Bool) -> (Self[A], Self[A])
+fn[A] LSeq::replicate(Int, A) -> Self[A]
+fn[A] LSeq::reverse(Self[A]) -> Self[A]
+fn[A, B] LSeq::scanl(Self[A], B, (B, A) -> B) -> Self[B]
+fn[A] LSeq::singleton(A) -> Self[A]
+fn[A] LSeq::snoc(Self[A], A) -> Self[A]
+fn[A] LSeq::span(Self[A], (A) -> Bool) -> (Self[A], Self[A])
+fn[A] LSeq::split_at(Self[A], Int) -> (Self[A], Self[A])
+fn[A] LSeq::take(Self[A], Int) -> Self[A]
+fn[A] LSeq::take_right(Self[A], Int) -> Self[A]
+fn[A] LSeq::take_while(Self[A], (A) -> Bool) -> Self[A]
+fn[A] LSeq::take_while_right(Self[A], (A) -> Bool) -> Self[A]
+fn[A] LSeq::to_list(Self[A]) -> @list.List[A]
+fn[A] LSeq::uncons(Self[A]) -> (A?, Self[A])
+fn[A] LSeq::unsnoc(Self[A]) -> (Self[A], A?)
+fn[A, B] LSeq::unzip(Self[(A, B)]) -> (Self[A], Self[B])
+fn[A] LSeq::update(Self[A], Int, A) -> Self[A]
+fn[A, B] LSeq::zip(Self[A], Self[B]) -> Self[(A, B)]
+fn[A, B, C] LSeq::zip_with(Self[A], Self[B], (A, B) -> C) -> Self[C]
+
+pub(all) struct Seq[A] {
+  // private fields
+}
+fn[A] Seq::adjust(Self[A], Int, (A) -> A) -> Self[A]
+fn[A] Seq::append(Self[A], Self[A]) -> Self[A]
+fn[A] Seq::break_right(Self[A], (A) -> Bool) -> (Self[A], Self[A])
+fn[A] Seq::break_seq(Self[A], (A) -> Bool) -> (Self[A], Self[A])
+fn[A] Seq::concat(@list.List[Self[A]]) -> Self[A]
+fn[A, B] Seq::concat_map(Self[A], (A) -> Self[B]) -> Self[B]
+fn[A] Seq::cons(A, Self[A]) -> Self[A]
+fn[A] Seq::delete_at(Self[A], Int) -> Self[A]
+fn[A] Seq::drop(Self[A], Int) -> Self[A]
+fn[A] Seq::drop_right(Self[A], Int) -> Self[A]
+fn[A] Seq::drop_while(Self[A], (A) -> Bool) -> Self[A]
+fn[A] Seq::drop_while_left(Self[A], (A) -> Bool) -> Self[A]
+fn[A] Seq::drop_while_right(Self[A], (A) -> Bool) -> Self[A]
+fn[A] Seq::empty() -> Self[A]
+fn[A] Seq::filter(Self[A], (A) -> Bool) -> Self[A]
+fn[A] Seq::from_list(@list.List[A]) -> Self[A]
+fn[A] Seq::index(Self[A], Int) -> A
+fn[A] Seq::insert_at(Self[A], Int, A) -> Self[A]
+fn[A] Seq::length(Self[A]) -> Int
+fn[A] Seq::lookup(Self[A], Int) -> A?
+fn[A, B] Seq::map(Self[A], (A) -> B) -> Self[B]
+fn[A, B] Seq::map_with_index(Self[A], (Int, A) -> B) -> Self[B]
+fn[A] Seq::null(Self[A]) -> Bool
+fn[A] Seq::partition(Self[A], (A) -> Bool) -> (Self[A], Self[A])
+fn[A] Seq::replicate(Int, A) -> Self[A]
+fn[A] Seq::reverse(Self[A]) -> Self[A]
+fn[A, B] Seq::scanl(Self[A], B, (B, A) -> B) -> Self[B]
+fn[A, B] Seq::scanr(Self[A], B, (A, B) -> B) -> Self[B]
+fn[A] Seq::singleton(A) -> Self[A]
+fn[A] Seq::snoc(Self[A], A) -> Self[A]
+fn[A] Seq::span(Self[A], (A) -> Bool) -> (Self[A], Self[A])
+fn[A] Seq::span_right(Self[A], (A) -> Bool) -> (Self[A], Self[A])
+fn[A] Seq::split_at(Self[A], Int) -> (Self[A], Self[A])
+fn[A] Seq::take(Self[A], Int) -> Self[A]
+fn[A] Seq::take_right(Self[A], Int) -> Self[A]
+fn[A] Seq::take_while(Self[A], (A) -> Bool) -> Self[A]
+fn[A] Seq::take_while_left(Self[A], (A) -> Bool) -> Self[A]
+fn[A] Seq::take_while_right(Self[A], (A) -> Bool) -> Self[A]
+fn[A] Seq::to_list(Self[A]) -> @list.List[A]
+fn[A] Seq::uncons(Self[A]) -> (A?, Self[A])
+fn[A, S] Seq::unfoldl((S) -> (S, A)?, S) -> Self[A]
+fn[A, S] Seq::unfoldr((S) -> (A, S)?, S) -> Self[A]
+fn[A] Seq::unsnoc(Self[A]) -> (Self[A], A?)
+fn[A, B] Seq::unzip(Self[(A, B)]) -> (Self[A], Self[B])
+fn[A] Seq::update(Self[A], Int, A) -> Self[A]
+fn[A, B] Seq::zip(Self[A], Self[B]) -> Self[(A, B)]
+fn[A, B, C] Seq::zip_with(Self[A], Self[B], (A, B) -> C) -> Self[C]
+
+// Type aliases
+
+// Traits
+
