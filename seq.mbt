@@ -1437,31 +1437,37 @@ pub(all) struct Seq[A] {
 }
 
 ///|
+/// 空序列构造；复杂度：O(1)
 pub fn[A] Seq::empty() -> Seq[A] {
   { ft: FingerTree::Empty, len: 0 }
 }
 
 ///|
+/// 单元素序列；复杂度：O(1)
 pub fn[A] Seq::singleton(x : A) -> Seq[A] {
   { ft: FingerTree::cons(x, FingerTree::Empty), len: 1 }
 }
 
 ///|
+/// 前插（在左端插入）；均摊 O(1)
 pub fn[A] Seq::cons(x : A, s : Seq[A]) -> Seq[A] {
   { ft: FingerTree::cons(x, s.ft), len: s.len + 1 }
 }
 
 ///|
+/// 后插（在右端插入）；均摊 O(1)
 pub fn[A] Seq::snoc(s : Seq[A], x : A) -> Seq[A] {
   { ft: FingerTree::snoc(s.ft, x), len: s.len + 1 }
 }
 
 ///|
+/// 拼接两个序列；复杂度：O(log min(n,m))
 pub fn[A] Seq::append(a : Seq[A], b : Seq[A]) -> Seq[A] {
   { ft: FingerTree::concat(a.ft, b.ft), len: a.len + b.len }
 }
 
 ///|
+/// 从 List 构造，保持输入顺序；复杂度：O(n)
 pub fn[A] Seq::from_list(xs : List[A]) -> Seq[A] {
   // 从左到右 snoc，保持与输入顺序一致
   let mut s = Seq::empty()
@@ -1472,11 +1478,14 @@ pub fn[A] Seq::from_list(xs : List[A]) -> Seq[A] {
 }
 
 ///|
+/// 转为 List；复杂度：O(n)
+/// 注意：本实现通过左折配合前插，to_list 展示为“逆序”（更像栈）
 pub fn[A] Seq::to_list(s : Seq[A]) -> List[A] {
   s.ft.to_list()
 }
 
 ///|
+/// 判空；复杂度：O(1)
 pub fn[A] Seq::null(s : Seq[A]) -> Bool {
   match s.ft {
     FingerTree::Empty => true
@@ -1485,11 +1494,13 @@ pub fn[A] Seq::null(s : Seq[A]) -> Bool {
 }
 
 ///|
+/// 返回长度；复杂度：O(1)
 pub fn[A] Seq::length(s : Seq[A]) -> Int {
   s.len
 }
 
 ///|
+/// 按索引查找（0 基）；复杂度：O(log n)，越界返回 None
 pub fn[A] Seq::lookup(s : Seq[A], i : Int) -> A? {
   if i < 0 {
     return None
@@ -1510,28 +1521,34 @@ fn[A] lseq_force_ft(s : LSeq[A]) -> FingerTree[A] {
 }
 
 ///|
+/// 懒脊序列空构造；复杂度：O(1)
+/// 除非特别说明，LSeq 与 Seq 具有相同阶的复杂度，仅延迟构造与拼接的求值
 pub fn[A] LSeq::empty() -> LSeq[A] {
   { ft: Lazy::from_value(FingerTree::Empty), len: 0 }
 }
 
 ///|
+/// 懒脊单元素；复杂度：O(1)
 pub fn[A] LSeq::singleton(x : A) -> LSeq[A] {
   { ft: Lazy::from_value(FingerTree::cons(x, FingerTree::Empty)), len: 1 }
 }
 
 ///|
+/// 懒脊前插；建立惰性计算，均摊 O(1)
 pub fn[A] LSeq::cons(x : A, s : LSeq[A]) -> LSeq[A] {
   let new_ft = Lazy::new(fn() { FingerTree::cons(x, lseq_force_ft(s)) })
   { ft: new_ft, len: s.len + 1 }
 }
 
 ///|
+/// 懒脊后插；建立惰性计算，均摊 O(1)
 pub fn[A] LSeq::snoc(s : LSeq[A], x : A) -> LSeq[A] {
   let new_ft = Lazy::new(fn() { FingerTree::snoc(lseq_force_ft(s), x) })
   { ft: new_ft, len: s.len + 1 }
 }
 
 ///|
+/// 懒脊拼接；复杂度：O(log min(n,m))（在强制时发生）
 pub fn[A] LSeq::append(a : LSeq[A], b : LSeq[A]) -> LSeq[A] {
   let new_ft = Lazy::new(fn() {
     FingerTree::concat(lseq_force_ft(a), lseq_force_ft(b))
@@ -1540,6 +1557,7 @@ pub fn[A] LSeq::append(a : LSeq[A], b : LSeq[A]) -> LSeq[A] {
 }
 
 ///|
+/// 从 List 构造懒脊序列；长度先严格求值，FingerTree 惰性构造
 pub fn[A] LSeq::from_list(xs : List[A]) -> LSeq[A] {
   // 构造可按需求值的 ft；长度先严格求值
   let mut n = 0
@@ -1551,32 +1569,38 @@ pub fn[A] LSeq::from_list(xs : List[A]) -> LSeq[A] {
 }
 
 ///|
+/// 转为 List；复杂度：O(n)，在过程中会强制求值
 pub fn[A] LSeq::to_list(s : LSeq[A]) -> List[A] {
   FingerTree::to_list(lseq_force_ft(s))
 }
 
 ///|
+/// 判空；复杂度：O(1)
 pub fn[A] LSeq::null(s : LSeq[A]) -> Bool {
   s.len == 0
 }
 
 ///|
+/// 返回长度；复杂度：O(1)
 pub fn[A] LSeq::length(s : LSeq[A]) -> Int {
   s.len
 }
 
 ///|
+/// 按索引查找；复杂度：O(log n)
 pub fn[A] LSeq::lookup(s : LSeq[A], i : Int) -> A? {
   // 复用严格版本实现
   Seq::lookup({ ft: lseq_force_ft(s), len: s.len }, i)
 }
 
 ///|
+/// 按索引取值；越界将 abort；复杂度：O(log n)
 pub fn[A] LSeq::index(s : LSeq[A], i : Int) -> A {
   Seq::index({ ft: lseq_force_ft(s), len: s.len }, i)
 }
 
 ///|
+/// 取前 n 个；复杂度：O(n)
 pub fn[A] LSeq::take(s : LSeq[A], n : Int) -> LSeq[A] {
   if n <= 0 {
     return LSeq::empty()
@@ -1590,6 +1614,7 @@ pub fn[A] LSeq::take(s : LSeq[A], n : Int) -> LSeq[A] {
 }
 
 ///|
+/// 丢弃前 n 个；复杂度：O(n)
 pub fn[A] LSeq::drop(s : LSeq[A], n : Int) -> LSeq[A] {
   if n <= 0 {
     return s
@@ -1602,6 +1627,7 @@ pub fn[A] LSeq::drop(s : LSeq[A], n : Int) -> LSeq[A] {
 }
 
 ///|
+/// 按位置分割；复杂度：O(log n)
 pub fn[A] LSeq::split_at(s : LSeq[A], n : Int) -> (LSeq[A], LSeq[A]) {
   if n <= 0 {
     return (LSeq::empty(), s)
@@ -1617,6 +1643,7 @@ pub fn[A] LSeq::split_at(s : LSeq[A], n : Int) -> (LSeq[A], LSeq[A]) {
 }
 
 ///|
+/// 映射；复杂度：O(n)，惰性封装结果 FingerTree
 pub fn[A, B] LSeq::map(s : LSeq[A], f : (A) -> B) -> LSeq[B] {
   let new_ft = Lazy::new(fn() {
     let strict : Seq[A] = { ft: lseq_force_ft(s), len: s.len }
@@ -1626,6 +1653,7 @@ pub fn[A, B] LSeq::map(s : LSeq[A], f : (A) -> B) -> LSeq[B] {
 }
 
 ///|
+/// 带索引映射；复杂度：O(n)
 pub fn[A, B] LSeq::map_with_index(s : LSeq[A], f : (Int, A) -> B) -> LSeq[B] {
   let new_ft = Lazy::new(fn() {
     let strict : Seq[A] = { ft: lseq_force_ft(s), len: s.len }
@@ -1635,6 +1663,7 @@ pub fn[A, B] LSeq::map_with_index(s : LSeq[A], f : (Int, A) -> B) -> LSeq[B] {
 }
 
 ///|
+/// 反转；复杂度：O(n)，惰性封装
 pub fn[A] LSeq::reverse(s : LSeq[A]) -> LSeq[A] {
   let new_ft = Lazy::new(fn() {
     let strict : Seq[A] = { ft: lseq_force_ft(s), len: s.len }
@@ -1644,6 +1673,7 @@ pub fn[A] LSeq::reverse(s : LSeq[A]) -> LSeq[A] {
 }
 
 ///|
+/// 按位调整；若索引存在则应用 f；复杂度：O(n)
 pub fn[A] LSeq::adjust(s : LSeq[A], i : Int, f : (A) -> A) -> LSeq[A] {
   let new_ft = Lazy::new(fn() {
     let strict : Seq[A] = { ft: lseq_force_ft(s), len: s.len }
@@ -1653,6 +1683,7 @@ pub fn[A] LSeq::adjust(s : LSeq[A], i : Int, f : (A) -> A) -> LSeq[A] {
 }
 
 ///|
+/// 按位更新；复杂度：O(n)
 pub fn[A] LSeq::update(s : LSeq[A], i : Int, x : A) -> LSeq[A] {
   let new_ft = Lazy::new(fn() {
     let strict : Seq[A] = { ft: lseq_force_ft(s), len: s.len }
@@ -1662,6 +1693,7 @@ pub fn[A] LSeq::update(s : LSeq[A], i : Int, x : A) -> LSeq[A] {
 }
 
 ///|
+/// 插入；复杂度：O(log n)（通过 split 再拼接）
 pub fn[A] LSeq::insert_at(s : LSeq[A], i : Int, x : A) -> LSeq[A] {
   let new_ft = Lazy::new(fn() {
     let strict : Seq[A] = { ft: lseq_force_ft(s), len: s.len }
@@ -1671,6 +1703,7 @@ pub fn[A] LSeq::insert_at(s : LSeq[A], i : Int, x : A) -> LSeq[A] {
 }
 
 ///|
+/// 删除；复杂度：O(n)
 pub fn[A] LSeq::delete_at(s : LSeq[A], i : Int) -> LSeq[A] {
   let new_ft = Lazy::new(fn() {
     let strict : Seq[A] = { ft: lseq_force_ft(s), len: s.len }
@@ -1699,6 +1732,7 @@ pub fn[A] LSeq::unsnoc(s : LSeq[A]) -> (LSeq[A], A?) {
 }
 
 ///|
+/// 复制 n 份元素；复杂度：O(n)
 pub fn[A] LSeq::replicate(n : Int, x : A) -> LSeq[A] {
   if n <= 0 {
     return LSeq::empty()
@@ -1708,6 +1742,7 @@ pub fn[A] LSeq::replicate(n : Int, x : A) -> LSeq[A] {
 }
 
 ///|
+/// 拉链组合到较短长度；复杂度：O(min(n,m))
 pub fn[A, B, C] LSeq::zip_with(
   sa : LSeq[A],
   sb : LSeq[B],
@@ -1723,11 +1758,13 @@ pub fn[A, B, C] LSeq::zip_with(
 }
 
 ///|
+/// 拉链；复杂度：O(min(n,m))
 pub fn[A, B] LSeq::zip(sa : LSeq[A], sb : LSeq[B]) -> LSeq[(A, B)] {
   LSeq::zip_with(sa, sb, fn(a, b) { (a, b) })
 }
 
 ///|
+/// 解拉链；复杂度：O(n)
 pub fn[A, B] LSeq::unzip(s : LSeq[(A, B)]) -> (LSeq[A], LSeq[B]) {
   let ft_a = Lazy::new(fn() {
     let strict : Seq[(A, B)] = { ft: lseq_force_ft(s), len: s.len }
@@ -1743,6 +1780,7 @@ pub fn[A, B] LSeq::unzip(s : LSeq[(A, B)]) -> (LSeq[A], LSeq[B]) {
 }
 
 ///|
+/// 左扫描；返回长度 + 1；复杂度：O(n)
 pub fn[A, B] LSeq::scanl(s : LSeq[A], init : B, f : (B, A) -> B) -> LSeq[B] {
   let new_ft = Lazy::new(fn() {
     let strict : Seq[A] = { ft: lseq_force_ft(s), len: s.len }
@@ -1752,6 +1790,7 @@ pub fn[A, B] LSeq::scanl(s : LSeq[A], init : B, f : (B, A) -> B) -> LSeq[B] {
 }
 
 ///|
+/// 取后 n 个；复杂度：O(n)
 pub fn[A] LSeq::take_right(s : LSeq[A], n : Int) -> LSeq[A] {
   if n <= 0 {
     return LSeq::empty()
@@ -1767,6 +1806,7 @@ pub fn[A] LSeq::take_right(s : LSeq[A], n : Int) -> LSeq[A] {
 }
 
 ///|
+/// 丢弃后 n 个；复杂度：O(n)
 pub fn[A] LSeq::drop_right(s : LSeq[A], n : Int) -> LSeq[A] {
   if n <= 0 {
     return s
@@ -1877,6 +1917,7 @@ pub fn[A, B] LSeq::concat_map(s : LSeq[A], f : (A) -> LSeq[B]) -> LSeq[B] {
 }
 
 ///|
+/// 按索引取值；越界将 abort；复杂度：O(log n)
 pub fn[A] Seq::index(s : Seq[A], i : Int) -> A {
   match Seq::lookup(s, i) {
     Some(x) => x
@@ -1885,6 +1926,7 @@ pub fn[A] Seq::index(s : Seq[A], i : Int) -> A {
 }
 
 ///|
+/// 取前 n 个；复杂度：O(n)
 pub fn[A] Seq::take(s : Seq[A], n : Int) -> Seq[A] {
   if n <= 0 {
     return Seq::empty()
@@ -1906,6 +1948,7 @@ pub fn[A] Seq::take(s : Seq[A], n : Int) -> Seq[A] {
 }
 
 ///|
+/// 丢弃前 n 个；复杂度：O(n)
 pub fn[A] Seq::drop(s : Seq[A], n : Int) -> Seq[A] {
   if n <= 0 {
     return s
@@ -1927,6 +1970,7 @@ pub fn[A] Seq::drop(s : Seq[A], n : Int) -> Seq[A] {
 }
 
 ///|
+/// 按位置分割 (n)；复杂度：O(log n)
 pub fn[A] Seq::split_at(s : Seq[A], n : Int) -> (Seq[A], Seq[A]) {
   if n <= 0 {
     return (Seq::empty(), s)
@@ -1939,6 +1983,7 @@ pub fn[A] Seq::split_at(s : Seq[A], n : Int) -> (Seq[A], Seq[A]) {
 }
 
 ///|
+/// 在索引处插入；复杂度：O(log n)（split + append）
 pub fn[A] Seq::insert_at(s : Seq[A], i : Int, x : A) -> Seq[A] {
   if i <= 0 {
     return Seq::cons(x, s)
@@ -1952,6 +1997,7 @@ pub fn[A] Seq::insert_at(s : Seq[A], i : Int, x : A) -> Seq[A] {
 }
 
 ///|
+/// 删除索引处元素；复杂度：O(n)
 pub fn[A] Seq::delete_at(s : Seq[A], i : Int) -> Seq[A] {
   if i < 0 {
     return s
@@ -1970,6 +2016,7 @@ pub fn[A] Seq::delete_at(s : Seq[A], i : Int) -> Seq[A] {
 }
 
 ///|
+/// 更新索引处元素；复杂度：O(n)
 pub fn[A] Seq::update(s : Seq[A], i : Int, x : A) -> Seq[A] {
   if i < 0 {
     return s
@@ -1990,6 +2037,7 @@ pub fn[A] Seq::update(s : Seq[A], i : Int, x : A) -> Seq[A] {
 }
 
 ///|
+/// 映射；复杂度：O(n)
 pub fn[A, B] Seq::map(s : Seq[A], f : (A) -> B) -> Seq[B] {
   let mut res = Seq::empty()
   FingerTree::fold_left(s.ft, (), (_, x) => {
@@ -2001,6 +2049,7 @@ pub fn[A, B] Seq::map(s : Seq[A], f : (A) -> B) -> Seq[B] {
 }
 
 ///|
+/// 带索引映射；复杂度：O(n)
 pub fn[A, B] Seq::map_with_index(s : Seq[A], f : (Int, A) -> B) -> Seq[B] {
   let mut res = Seq::empty()
   let mut idx = 0
@@ -2014,6 +2063,7 @@ pub fn[A, B] Seq::map_with_index(s : Seq[A], f : (Int, A) -> B) -> Seq[B] {
 }
 
 ///|
+/// 过滤；复杂度：O(n)
 pub fn[A] Seq::filter(s : Seq[A], p : (A) -> Bool) -> Seq[A] {
   let mut res = Seq::empty()
   FingerTree::fold_left(s.ft, (), (_, x) => {
@@ -2027,6 +2077,7 @@ pub fn[A] Seq::filter(s : Seq[A], p : (A) -> Bool) -> Seq[A] {
 }
 
 ///|
+/// 反转；复杂度：O(n)
 pub fn[A] Seq::reverse(s : Seq[A]) -> Seq[A] {
   // 左折配合前插，得到反转
   let mut res = Seq::empty()
@@ -2127,6 +2178,7 @@ pub fn[A] Seq::break_right(s : Seq[A], p : (A) -> Bool) -> (Seq[A], Seq[A]) {
 }
 
 ///|
+/// 就地调整（若索引存在则应用 f）；复杂度：O(n)
 pub fn[A] Seq::adjust(s : Seq[A], i : Int, f : (A) -> A) -> Seq[A] {
   match Seq::lookup(s, i) {
     Some(v) => Seq::update(s, i, f(v))
@@ -2135,6 +2187,7 @@ pub fn[A] Seq::adjust(s : Seq[A], i : Int, f : (A) -> A) -> Seq[A] {
 }
 
 ///|
+/// 复制 n 份元素；复杂度：O(n)
 pub fn[A] Seq::replicate(n : Int, x : A) -> Seq[A] {
   fn go(k : Int, acc : Seq[A]) -> Seq[A] {
     if k <= 0 {
@@ -2189,6 +2242,7 @@ pub fn[A, S] Seq::unfoldl(step : (S) -> (S, A)?, seed : S) -> Seq[A] {
 }
 
 ///|
+/// 拉链组合到较短长度；复杂度：O(min(n,m))
 pub fn[A, B, C] Seq::zip_with(
   sa : Seq[A],
   sb : Seq[B],
@@ -2210,6 +2264,7 @@ pub fn[A, B, C] Seq::zip_with(
 }
 
 ///|
+/// 左扫描；返回长度 + 1；复杂度：O(n)
 pub fn[A, B] Seq::scanl(s : Seq[A], init : B, f : (B, A) -> B) -> Seq[B] {
   let mut acc = init
   let mut res = Seq::singleton(init)
@@ -2233,11 +2288,13 @@ pub fn[A, B] Seq::scanr(s : Seq[A], init : B, f : (A, B) -> B) -> Seq[B] {
 }
 
 ///|
+/// 拉链；复杂度：O(min(n,m))
 pub fn[A, B] Seq::zip(sa : Seq[A], sb : Seq[B]) -> Seq[(A, B)] {
   Seq::zip_with(sa, sb, fn(a, b) { (a, b) })
 }
 
 ///|
+/// 解拉链；复杂度：O(n)
 pub fn[A, B] Seq::unzip(s : Seq[(A, B)]) -> (Seq[A], Seq[B]) {
   let mut sa = Seq::empty()
   let mut sb = Seq::empty()
@@ -2252,6 +2309,7 @@ pub fn[A, B] Seq::unzip(s : Seq[(A, B)]) -> (Seq[A], Seq[B]) {
 }
 
 ///|
+/// 按谓词划分；复杂度：O(n)
 pub fn[A] Seq::partition(s : Seq[A], p : (A) -> Bool) -> (Seq[A], Seq[A]) {
   let mut yes = Seq::empty()
   let mut no = Seq::empty()
@@ -2268,6 +2326,7 @@ pub fn[A] Seq::partition(s : Seq[A], p : (A) -> Bool) -> (Seq[A], Seq[A]) {
 }
 
 ///|
+/// span：最长前缀满足 p，与剩余；复杂度：O(n)
 pub fn[A] Seq::span(s : Seq[A], p : (A) -> Bool) -> (Seq[A], Seq[A]) {
   (Seq::take_while(s, p), Seq::drop_while(s, p))
 }
@@ -2278,6 +2337,7 @@ pub fn[A] Seq::break_seq(s : Seq[A], p : (A) -> Bool) -> (Seq[A], Seq[A]) {
 }
 
 ///|
+/// 取后 n 个；复杂度：O(n)
 pub fn[A] Seq::take_right(s : Seq[A], n : Int) -> Seq[A] {
   if n <= 0 {
     return Seq::empty()
@@ -2290,6 +2350,7 @@ pub fn[A] Seq::take_right(s : Seq[A], n : Int) -> Seq[A] {
 }
 
 ///|
+/// 丢弃后 n 个；复杂度：O(n)
 pub fn[A] Seq::drop_right(s : Seq[A], n : Int) -> Seq[A] {
   if n <= 0 {
     return s
